@@ -75,5 +75,33 @@ class Dosen extends CI_Controller{
         $this->dosen->delete($data_dosen);
         redirect('dosen','refresh');
     }
+    public function upload(){
+        $_iddosen = $this->input->post("iddosen");
+        $this->load->model('dosen_model', 'dosen');
+        $dsn = $this->dosen->getById($_iddosen);
+        $data['dsn'] = $dsn;
+
+        $config['upload_path'] = './uploads/photos';
+        $config['allowed_types'] = 'jpg|png';
+        $config['max_size'] = 2894;
+        $config['max_width'] = 2894;
+        $config['max_height'] = 2894;
+        $config['file_name'] = $dsn->id;
+
+        // menginisialisasi file upload
+        $this->load->library('upload', $config);
+
+        if (!$this->upload->do_upload('foto')) {
+            $data['error'] = $this->upload->display_errors();
+        } else {
+            $data['error'] = 'data sukses';
+            $data['upload_data'] = $this->upload->data();
+        }
+        // kirim dan render ke detail
+        $this->load->view('layouts/header');
+        $this->load->view('dosen/detail', $data);
+        $this->load->view('layouts/footer');
+        
+    }
 }
 ?>

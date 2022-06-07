@@ -75,5 +75,33 @@ class Mahasiswa extends CI_Controller{
         $this->mahasiswa->delete($data_mahasiswa);
         redirect('mahasiswa','refresh');
     }
+    public function upload(){
+        $_idmahasiswa = $this->input->post("idmahasiswa");
+        $this->load->model('mahasiswa_model', 'mahasiswa');
+        $siswa = $this->mahasiswa->getById($_idmahasiswa);
+        $data['siswa'] = $siswa;
+
+        $config['upload_path'] = './uploads/photos';
+        $config['allowed_types'] = 'jpg|png';
+        $config['max_size'] = 2894;
+        $config['max_width'] = 2894;
+        $config['max_height'] = 2894;
+        $config['file_name'] = $siswa->id;
+
+        // menginisialisasi file upload
+        $this->load->library('upload', $config);
+
+        if (!$this->upload->do_upload('foto')) {
+            $data['error'] = $this->upload->display_errors();
+        } else {
+            $data['error'] = 'data sukses';
+            $data['upload_data'] = $this->upload->data();
+        }
+        // kirim dan render ke detail
+        $this->load->view('layouts/header');
+        $this->load->view('mahasiswa/detail', $data);
+        $this->load->view('layouts/footer');
+        
+    }
 }
 ?>
